@@ -1,0 +1,147 @@
+package com.bjwl.Test2;
+
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Font;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+
+@SuppressWarnings("serial")
+public class Server extends JFrame {
+	static CopyOnWriteArrayList<Channel> container = new CopyOnWriteArrayList<>();
+	private static JTextArea taContent = new JTextArea();
+	private static int index = 0;
+
+	public static void launchFrame() {
+		JFrame jf = new JFrame("服务器");
+		@SuppressWarnings("unused")
+		Container con = jf.getContentPane();
+		taContent.setEditable(false);
+		taContent.setBackground(Color.DARK_GRAY);
+		taContent.setForeground(Color.YELLOW);
+		taContent.setFont(new Font("黑体",Font.BOLD,20));
+		jf.add(taContent);
+		jf.setBounds(400, 200, 300, 400);
+		jf.setVisible(true);
+		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
+	public static void main(String[] args) throws IOException {
+		@SuppressWarnings("resource")
+		ServerSocket server = new ServerSocket(8888);
+		launchFrame();
+		taContent.append("服务器已建立等待用户加入\n");
+		while (true) {
+			Socket user = server.accept();
+			Channel channel = new Channel(user);
+			index++;
+			taContent.append(user.getInetAddress().getHostAddress() + " connected " + index + " clients\n");
+			container.add(channel);
+			new Thread(channel).start();
+		}
+	}
+
+	static class Channel implements Runnable {
+		private DataOutputStream dos;
+		private DataInputStream dis;
+		private Socket user;
+		private boolean isRunning;
+		private  String name;
+
+		public Channel(Socket user) {
+			this.user = user;
+			try {
+				dis = new DataInputStream(this.user.getInputStream());
+				this.name = dis.readUTF();
+				dos = new DataOutputStream(this.user.getOutputStream());
+				isRunning = true;
+			} catch (IOException e) {
+				Del();
+			}
+		}
+
+		@Override
+		public void run() {
+			SendOther("Welcome To Chat",true);
+			SendOther(this.name+"Join in the chat", true);
+			String msg = "";
+			while (isRunning) {
+				msg = Receive();
+				if(!msg.equals(this.name)) {
+				SendOther("                              "+msg+":"+this.name,false);
+				Send(this.name+":"+msg);
+				}
+			}
+		}
+
+		public String Receive() {
+			String msg ="";
+			try {
+				msg = dis.readUTF();
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null, "Tcp Receive error");
+				Del();
+			}
+			return msg;
+		}
+
+		public void SendOther(String msg, boolean isSystem) {
+			if (isSystem) {
+				Send(msg);
+			} else {
+				for (Channel e : container) {
+					if (e == this) {
+						continue;
+					} else {
+						e.Send(msg);
+					}
+				}
+			}
+		}
+
+		public void Send(String msg) {
+			try {
+				dos.writeUTF(msg);
+				dos.flush();
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null, "Tcp Send error");
+				Del();
+			}
+		}
+
+		public void Del() {
+			container.remove(this);
+			SendOther(this.name+"离开了聊天室", false);
+			this.isRunning = false;
+			if (null != dis) {
+				try {
+					dis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (null != user) {
+				try {
+					user.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (null != dos) {
+				try {
+					dos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+}

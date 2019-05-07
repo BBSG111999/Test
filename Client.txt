@@ -1,0 +1,310 @@
+package com.bjwl.Test2;
+import java.awt.Container;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.TextArea;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
+
+@SuppressWarnings("serial")
+public class Client extends JFrame {
+	static TextArea taContent = new TextArea();
+	static JTextField tfTxt = new JTextField(20);
+	static JButton send = new JButton("Send");
+	static JButton connect = new JButton("Connect");
+	static JButton clear = new JButton("Clear");
+	static boolean live = false;
+	static JPanel p1 = new JPanel();
+	static JPanel p2 = new JPanel();
+	private static DataOutputStream dos;
+	private static DataInputStream dis;
+	private static String name;
+	
+	public static void main(String[] args) {
+		new Record().record();
+	}
+
+	public static void Launch() throws UnknownHostException, IOException {
+		Socket user = new Socket("localhost", 8888);
+		new Thread(new UserSend(user)).start();
+		new Thread(new UserReceive(user)).start();
+	}
+//用户发送
+	static class UserSend implements Runnable {
+		private static Socket user;
+		boolean  isRunning;
+		@SuppressWarnings("static-access")
+		public UserSend(Socket user) {
+			this.user = user;
+			try {
+				dos = new DataOutputStream(this.user.getOutputStream());
+				dos.writeUTF(name);
+				dis = new DataInputStream(this.user.getInputStream());
+				isRunning = true;
+			} catch (IOException e) {
+				Del();
+			}
+		}
+
+		public String Receiver() {
+			String msg = "";
+			try {
+				msg = dis.readUTF();
+			} catch (IOException e) {
+				System.out.println("User Receiver Error");
+				Del();
+			}
+			return msg;
+		}
+
+		public void launchFrame() {
+			JFrame jf = new JFrame();
+			taContent.setEditable(false);
+			p2.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 5));
+			p2.add(send);
+			p2.add(connect);
+			p2.add(clear);
+			Container con = jf.getContentPane();
+			con.add(taContent, "North");
+			con.add(tfTxt, "Center");
+			con.add(p2, "South");
+			jf.setBounds(400, 200, 350, 400);
+			jf.setTitle("We Chat...");
+			jf.setVisible(true);
+			jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			send.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					String msg = "";
+					msg = tfTxt.getText();
+					Send(msg);
+					tfTxt.setText("");
+				}
+			});
+			clear.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					taContent.setText("");
+				}
+			});
+		}
+
+		public void Send(String msg) {
+			try {
+				dos.writeUTF(msg);
+				dos.flush();
+			} catch (IOException e) {
+				System.out.println("User Send Error");
+				Del();
+			}
+		}
+
+		public void Del() {
+			this.isRunning = false;
+			if (null != dos) {
+				try {
+					dos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (null != user) {
+				try {
+					user.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		@Override
+		public void run() {
+			launchFrame();
+
+		}
+	}
+//用户接受
+	static class UserReceive implements Runnable {
+		private Socket user;
+		private DataInputStream dis;
+		boolean isRunning;
+
+		public UserReceive(Socket user) {
+			this.user = user;
+			try {
+				dis = new DataInputStream(this.user.getInputStream());
+				this.isRunning = true;
+			} catch (IOException e) {
+				Del();
+			}
+		}
+
+		public String Receiver() {
+			String msg = "";
+			try {
+				msg = dis.readUTF();
+			} catch (IOException e) {
+				System.out.println("User Receiver Error");
+				Del();
+			}
+			return msg;
+		}
+
+		public void Del() {
+			this.isRunning = false;
+			if (null != dis) {
+				try {
+					dis.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (null != user) {
+				try {
+					user.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		@Override
+		public void run() {
+			String msg = "";
+			taContent.setFont(new Font("黑体",Font.BOLD,15));
+			while (isRunning) {
+				msg = Receiver();
+				taContent.append(msg + "\n");
+			}
+		}
+	}
+//用户登录界面
+	static class Record extends JFrame {
+		Container container = getContentPane();
+		String user;
+		static String password;
+
+		public void record() {
+
+			container.setLayout(null);
+			setTitle("登陆界面");
+			setVisible(true);
+			setBounds(400, 250, 400, 300);
+			setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+			JButton entry = new JButton("登陆");
+			JButton reset = new JButton("重置");
+			JButton revise = new JButton("修改");
+			JPasswordField pass = new JPasswordField();
+			JLabel jl1 = new JLabel("请输入用户名:");
+			JLabel jl2 = new JLabel("请输入密码:");
+			JTextField jf = new JTextField();
+			entry.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if ((jf.getText().length() == 0) || pass.getPassword().length == 0) {
+						JOptionPane.showMessageDialog(null, "用户名或密码不能为空");
+					} else {
+						try {
+							name=jf.getText();
+							JOptionPane.showMessageDialog(null, "登陆成功");
+                            Client.Launch();
+							setVisible(false);
+						} catch (IOException e2) {
+							e2.printStackTrace();
+						}
+						try {
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+					}
+				}
+			});
+			reset.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					jf.setText(null);
+					pass.setText(null);
+				}
+			});
+			revise.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					container.setVisible(false);
+					new Test00().L();
+				}
+			});
+			jl1.setBounds(30, 30, 100, 20);
+			jf.setBounds(200, 30, 100, 20);
+			jl2.setBounds(30, 90, 100, 20);
+			pass.setBounds(200, 90, 100, 20);
+			entry.setBounds(30, 200, 80, 30);
+			reset.setBounds(250, 200, 80, 30);
+			revise.setBounds(150, 200, 80, 30);
+			container.add(jl2);
+			container.add(pass);
+			container.add(jl1);
+			container.add(jf);
+			container.add(entry);
+			container.add(reset);
+			container.add(revise);
+		}
+
+		public void L() {
+			Container container1 = getContentPane();
+			setTitle("修改界面");
+			setVisible(true);
+			container1.setLayout(null);
+			setBounds(400, 250, 400, 300);
+			setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+			JLabel jl1 = new JLabel("请输入用户名:");
+			JLabel jl2 = new JLabel("请输入旧密码:");
+			JLabel jl3 = new JLabel("请输入新密码");
+			JButton jb1 = new JButton("确定");
+			JTextField jf = new JTextField();
+			JPasswordField jp1 = new JPasswordField();
+			JPasswordField jp2 = new JPasswordField();
+			jb1.addActionListener(new ActionListener() {
+
+				public void actionPerformed(ActionEvent e) {
+
+					if (jf.getText().trim().equals(user) && new String(jp1.getPassword()).trim().equals(password)) {
+						JOptionPane.showMessageDialog(null, "密码修改成功");
+						password = new String(jp2.getPassword());
+						System.out.println(password);
+						new Test00().W();
+						setVisible(false);
+					} else {
+						JOptionPane.showMessageDialog(null, "用户1名或密码错误");
+					}
+				}
+			});
+			jb1.setBounds(30, 200, 80, 25);
+			jl1.setBounds(30, 30, 100, 20);
+			jf.setBounds(200, 30, 100, 20);
+			jl2.setBounds(30, 90, 100, 20);
+			jp1.setBounds(200, 90, 100, 20);
+			jl3.setBounds(30, 150, 100, 20);
+			jp2.setBounds(200, 150, 100, 20);
+			container1.add(jl1);
+			container1.add(jl2);
+			container1.add(jl3);
+			container1.add(jf);
+			container1.add(jb1);
+			container1.add(jp1);
+			container1.add(jp2);
+		}
+	}
+}
+
