@@ -1,5 +1,8 @@
 #include <stdio.h>
 #define max 10
+#define Max 1000
+#include <stdlib.h>
+//å†’æ³¡
 void MaoPao(int a[]){
 int i,j;
 int swap;
@@ -13,108 +16,7 @@ for(i=0;i<max-1;i++){
 	}
 }
 }
-void main(){
-int a[max],i;
-for(i=0;i<max;i++){
-	scanf("%d",&a[i]);
-}
-MaoPao(a);
-for(i=0;i<max;i++){
-	printf("%d ",a[i]);
-}
-}
-#include <stdio.h>
-#define max 100
-struct src{
-	int v;        //½áµã
-	int shortest; //È¨Öµ
-};
-/*
-ÆÕÀûÄ·Ëã·¨£º
-Ä¿µÄ£º¸ù¾İÍ¼µÄÁÚ½Ó¾ØÕó±íÊ¾³öÍ¼µÄ×îĞ¡Éú³ÉÊ÷
-Ë¼Ïë£ºÓÃ¾Ö²¿¹¹ÔìÕûÌå
-ÉèÖÃÁ½¸ö¼¯ºÏ·Ö±ğ·Å¶¥µãºÍ±ß£¬³õÊ¼Îª¿Õ
-Ñ¡¶¨Í¼ÖĞµÄÒ»¸ö¶¥µãÎªÆğÊ¼¶¥µã¿ªÊ¼¹¹Ôì×îĞ¡Éú³ÉÊ÷
-´Ó¶¥µã¼¯ºÏºÍÊ£ÏÂ¶¥µãÖĞÑ¡È¡È¨Öµ×îÏÈµÄÁ½¸ö¶¥µã
-½«·Ç¶¥µã¼¯ºÏÖĞµÄ¶¥µã¼ÓÈë¶¥µã¼¯ºÏÖĞ£¬½«ÕâÁ½¸ö¶¥µãµÄ±ß¼ÓÈë±ßµÄ¼¯ºÏ
-ÖØ¸´ÉÏÊö²Ù×÷Ö±µ½Ñ¡È¡ÁË(¶¥µã-1)Ìõ±ß
-²ÎÊıËµÃ÷£º
-LJJZ£ºÍ¼µÄÁÚ½Ó¾ØÕó
-Point_Sum£º½áµã¸öÊı
-G£º¸¨×ôÊı×é
-*/
-void Prim(int LJJZ[][max],int Point_Sum,struct src G[]){
-int i,j,k;          //¸¨Öú±äÁ¿ 
-int min;            //´æ·ÅGÖĞ×îĞ¡µÄÈ¨Öµ
-for(i=1;i<Point_Sum;i++){ //
-min=1000;           //minµÄÖµ±ØĞë´óÓÚµÈÓÚÁÚ½Ó¾ØÕóÖĞÁ½½áµã²»´æÔÚµÄÖµ
-for(j=1;j<Point_Sum;j++){
-	if(G[j].shortest<min&&G[j].shortest>0){
-		min=G[j].shortest;  //»ñµÃGÖĞµÄ×îÏÈÈ¨Öµ
-		k=j;
-	}
-}
-printf("%d--%d\n",G[k].v,k);
-G[k].shortest=0;
-//¸üĞÂG
-for(j=0;j<Point_Sum;j++){ 
-	if(LJJZ[k][j]<G[j].shortest){
-		G[j].shortest=LJJZ[k][j];
-		G[j].v=k;
-	}
-}
-}
-}
-void main(){
-int i,j;
-int Point_Sum;
-int LJJZ[max][max];
-struct src G[max];
-printf("ÇëÊäÈëÍ¼µÄ½áµãÊı£º\n");
-scanf("%d",&Point_Sum);
-printf("ÇëÊäÈëÍ¼µÄÁÚ½Ó¾ØÕó,ÎŞÇîÒÔ1000±íÊ¾£º\n");
-for(i=0;i<Point_Sum;i++){
-	for(j=0;j<Point_Sum;j++){
-	scanf("%d",&LJJZ[i][j]);
-	}
-}
-G[0].shortest=0;
-G[0].v=0;
-for(i=1;i<Point_Sum;i++){
-	G[i].shortest=LJJZ[0][i];
-	G[i].v=0;
-}
-Prim(LJJZ,Point_Sum,G);
-}
-/*
-ººÅµËşÎÊÌâ£º
-ÒÑÖªººÅµËşÉÏÓĞÖ¸ÕëÈô¸É£¬´ÓĞ¡µ½´óÅÅĞòÔÚa¸Ë×ÓÉÏ
-ÏÖÒªÇó½«aÉÏµÄÖ¸Õë¾­bÒÆ¶¯µ½cÉÏ£¬Ã¿´ÎÖ»ÄÜÒÆ¶¯Ò»¸öÖ¸Õë
-²¢ÇÒ´óµÄ²»ÄÜÔÚĞ¡µÄÉÏÃæ
-Ë¼Ïë£º²ÉÓÃµİ¹é£¬ÈëÕ»²Ù×÷
-*/
-void HanNuo(char a,char b,char c,int DishNumber){
-	if(DishNumber==1){
-		printf("%c-->%c\n",a,c);
-	}
-	else{
-		HanNuo(a,c,b,DishNumber-1);
-		printf("%c-->%c\n",a,c);
-		HanNuo(b,a,c,DishNumber-1);
-	}
-}
-void main(){
-int DishNumber;
-char a='a',b='b',c='c';
-printf("ÇëÊäÈëººÅµËşÉÏµÄÖ¸ÕëÊı£º\n");
-scanf("%d",&DishNumber);
-printf("²½ÖèÎª£º\n");
-HanNuo(a,b,c,DishNumber);
-}
-#include <stdio.h>
-#include <stdlib.h>
-#define Max 100
-//²åÈëÅÅĞò
+//æ’å…¥æ’åº
 void Insert(int Data[],int nNum){
 	int i,j,k,Temp;
 	for(i=0;i<nNum;i++){
@@ -129,33 +31,86 @@ void Insert(int Data[],int nNum){
 		}
 	}
 }
-//Ã°ÅİÅÅĞò
-void MaoPao(int Data[],int Datalon){
-	int i,j,swap;
-	for(i=0;i<Datalon-1;i++){
-		for(j=0;j<Datalon-1-i;j++){
-			if(Data[j]>Data[j+1]){
-				swap=Data[j];
-				Data[j]=Data[j+1];
-				Data[j+1]=swap;
-			}
-		}
+struct src{
+	int v;        //ç»“ç‚¹
+	int shortest; //æƒå€¼
+};
+/*
+æ™®åˆ©å§†ç®—æ³•ï¼š
+ç›®çš„ï¼šæ ¹æ®å›¾çš„é‚»æ¥çŸ©é˜µè¡¨ç¤ºå‡ºå›¾çš„æœ€å°ç”Ÿæˆæ ‘
+æ€æƒ³ï¼šç”¨å±€éƒ¨æ„é€ æ•´ä½“
+è®¾ç½®ä¸¤ä¸ªé›†åˆåˆ†åˆ«æ”¾é¡¶ç‚¹å’Œè¾¹ï¼Œåˆå§‹ä¸ºç©º
+é€‰å®šå›¾ä¸­çš„ä¸€ä¸ªé¡¶ç‚¹ä¸ºèµ·å§‹é¡¶ç‚¹å¼€å§‹æ„é€ æœ€å°ç”Ÿæˆæ ‘
+ä»é¡¶ç‚¹é›†åˆå’Œå‰©ä¸‹é¡¶ç‚¹ä¸­é€‰å–æƒå€¼æœ€å…ˆçš„ä¸¤ä¸ªé¡¶ç‚¹
+å°†éé¡¶ç‚¹é›†åˆä¸­çš„é¡¶ç‚¹åŠ å…¥é¡¶ç‚¹é›†åˆä¸­ï¼Œå°†è¿™ä¸¤ä¸ªé¡¶ç‚¹çš„è¾¹åŠ å…¥è¾¹çš„é›†åˆ
+é‡å¤ä¸Šè¿°æ“ä½œç›´åˆ°é€‰å–äº†(é¡¶ç‚¹-1)æ¡è¾¹
+å‚æ•°è¯´æ˜ï¼š
+LJJZï¼šå›¾çš„é‚»æ¥çŸ©é˜µ
+Point_Sumï¼šç»“ç‚¹ä¸ªæ•°
+Gï¼šè¾…ä½æ•°ç»„
+*/
+void Prim(int LJJZ[][max],int Point_Sum,struct src G[]){
+int i,j,k;          //è¾…åŠ©å˜é‡ 
+int min;            //å­˜æ”¾Gä¸­æœ€å°çš„æƒå€¼
+for(i=1;i<Point_Sum;i++){ //
+min=1000;           //minçš„å€¼å¿…é¡»å¤§äºç­‰äºé‚»æ¥çŸ©é˜µä¸­ä¸¤ç»“ç‚¹ä¸å­˜åœ¨çš„å€¼
+for(j=1;j<Point_Sum;j++){
+	if(G[j].shortest<min&&G[j].shortest>0){
+		min=G[j].shortest;  //è·å¾—Gä¸­çš„æœ€å…ˆæƒå€¼
+		k=j;
 	}
 }
-
+printf("%d--%d\n",G[k].v,k);
+G[k].shortest=0;
+//æ›´æ–°G
+for(j=0;j<Point_Sum;j++){ 
+	if(LJJZ[k][j]<G[j].shortest){
+		G[j].shortest=LJJZ[k][j];
+		G[j].v=k;
+	}
+}
+}
+}
+//æµ‹è¯•æ™®åˆ©å§†
 void main(){
-	int Data[5];
-	int i;
-	for(i=0;i<5;i++){
-		scanf("%d",&Data[i]);
-	}
-	MaoPao(Data,5);
-		for(i=0;i<5;i++){
-		printf("%d ",Data[i]);
+int i,j;
+int Point_Sum;
+int LJJZ[max][max];
+struct src G[max];
+printf("è¯·è¾“å…¥å›¾çš„ç»“ç‚¹æ•°ï¼š\n");
+scanf("%d",&Point_Sum);
+printf("è¯·è¾“å…¥å›¾çš„é‚»æ¥çŸ©é˜µ,æ— ç©·ä»¥1000è¡¨ç¤ºï¼š\n");
+for(i=0;i<Point_Sum;i++){
+	for(j=0;j<Point_Sum;j++){
+	scanf("%d",&LJJZ[i][j]);
 	}
 }
-#include <stdio.h>
-#include <stdlib.h>
+G[0].shortest=0;
+G[0].v=0;
+for(i=1;i<Point_Sum;i++){
+	G[i].shortest=LJJZ[0][i];
+	G[i].v=0;
+}
+Prim(LJJZ,Point_Sum,G);
+}
+/*
+æ±‰è¯ºå¡”é—®é¢˜ï¼š
+å·²çŸ¥æ±‰è¯ºå¡”ä¸Šæœ‰æŒ‡é’ˆè‹¥å¹²ï¼Œä»å°åˆ°å¤§æ’åºåœ¨aæ†å­ä¸Š
+ç°è¦æ±‚å°†aä¸Šçš„æŒ‡é’ˆç»bç§»åŠ¨åˆ°cä¸Šï¼Œæ¯æ¬¡åªèƒ½ç§»åŠ¨ä¸€ä¸ªæŒ‡é’ˆ
+å¹¶ä¸”å¤§çš„ä¸èƒ½åœ¨å°çš„ä¸Šé¢
+æ€æƒ³ï¼šé‡‡ç”¨é€’å½’ï¼Œå…¥æ ˆæ“ä½œ
+*/
+void HanNuo(char a,char b,char c,int DishNumber){
+	if(DishNumber==1){
+		printf("%c-->%c\n",a,c);
+	}
+	else{
+		HanNuo(a,c,b,DishNumber-1);
+		printf("%c-->%c\n",a,c);
+		HanNuo(b,a,c,DishNumber-1);
+	}
+}
+//è¿ªæ°æ–¯ç‰¹æ‹‰
 void Dijkstra(int n,int v,int dist[],int prev[],int **cost){
 	int i,j,maxint=65535,*s,temp,u;
 	s=(int *)malloc(sizeof(int) *n);
@@ -199,7 +154,7 @@ void ShowPath(int n,int v,int u,int *dist,int *prev){
 		way[count]=prev[w];
 		w=prev[w];
 	}
-	printf("Â·¾¶Îª£º\n");
+	printf("è·¯å¾„ä¸ºï¼š\n");
 	for(j=count;j>=1;j--){
 		printf("%d->",way[j]);
 	}
@@ -207,9 +162,9 @@ void ShowPath(int n,int v,int u,int *dist,int *prev){
 }
 void main(){
 	int i,j,t,n,v,**cost,*dist,*prev;
-	printf("ÇëÊäÈë½áµãÊı\n");
+	printf("è¯·è¾“å…¥ç»“ç‚¹æ•°\n");
 	scanf("%d",&n);
-	printf("ÇëÊäÈë½áµã\n");
+	printf("è¯·è¾“å…¥ç»“ç‚¹\n");
 	cost=(int **)malloc(sizeof(int)*(n+1));
 	for(i=1;i<=n;i++)
 		cost[i]=(int *)malloc(sizeof(int)*(n+1));
@@ -218,30 +173,15 @@ void main(){
 			scanf("%d",&cost[i][t]);
 		dist=(int *)malloc(sizeof(int)*n);
 		prev=(int *)malloc(sizeof(int)*n);
-		printf("ÇëÊäÈëÔ´½áµã\n");
+		printf("è¯·è¾“å…¥æºç»“ç‚¹\n");
 		scanf("%d",&v);
 		Dijkstra(n,v,dist,prev,cost);
-		printf("×î¶ÌÂ·¾¶Îª£º\n");
+		printf("æœ€çŸ­è·¯å¾„ä¸ºï¼š\n");
 		for(i=1;i<=n;i++){
 			if(i!=v){
-				printf("%d µ½ %d µÄ¾àÀëÎª %d:",v,i,dist[i]);
+				printf("%d åˆ° %d çš„è·ç¦»ä¸º %d:",v,i,dist[i]);
 				printf("%d %d",i,prev[i]);
 				ShowPath(n,v,i,dist,prev);
 			}
 		}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
