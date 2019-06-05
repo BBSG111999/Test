@@ -1,9 +1,8 @@
-## 欢迎光临
-欢迎进入吴超的个人博客
-#include <stdio.h>
-#define max 10
-#define Max 1000
-#include <stdlib.h>
+## 欢迎光临吴超个人博客
+<br />#include <stdio.h>
+<br />#define max 10
+<br />#define Max 1000
+<br />#include <stdlib.h>
 //冒泡
 void MaoPao(int a[]){
 int i,j;
