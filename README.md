@@ -1,4 +1,5 @@
-## 欢迎光临吴超个人博客
+## Welcome To My Blog
+# User:吴超
 <br />#include "stdio.h"
 <br />#include "stdlib.h"
 <br />#define max 10
