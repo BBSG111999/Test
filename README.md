@@ -1,4 +1,4 @@
-<!doctype html>
+<html>
 <html lang="en">
  <head>
   <meta charset="UTF-8">
@@ -15,5 +15,6 @@
  </head>
  <body>
   <div class="love">暖玉温香抱满怀，离魂到天外</div>
+  <div>在干嘛，游游</div>
  </body>
 </html>
