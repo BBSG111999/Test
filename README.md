@@ -17,7 +17,7 @@
   var flag;
   flag= window.confirm("明天来吗?");
   while(!flag){
-	  flag= window.confirm("来?");
+	  flag= window.confirm("明天来吗?");
 	  }
 	  alert("好的，等你");
   </script>
